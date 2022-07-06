@@ -1,32 +1,27 @@
 import model.*;
-import repository.*;
 import service.*;
-
-import java.util.*;
+import util.AtmValidator;
+import util.Util;
 
 public class Main {
 
     public static void main(String[] args) {
-        List<Account> accounts = AccountRepository.readAccountsFromFile(args[0]);
-        List<Transaction> transactions = TransactionRepository.readTransactionsFromFile(args[1]);
-
-        Scanner scanner = new Scanner(System.in);
+        AtmService atmService = new AtmService(args);
 
         Account currentAccount = null;
         while(true) {
-            currentAccount = MainService.authenticate(scanner, accounts, currentAccount);
+            currentAccount = atmService.authenticate(currentAccount);
 
-            int menu;
-            System.out.print(
-                "\n" +
+            String sMenu = Util.displayLineScreen(
                 "1. Withdraw\n" +
                 "2. Fund Transfer\n" +
                 "3. Transaction History\n" +
                 "4. Exit\n" +
                 "Please choose option[3]: "
             );
-            String sMenu = scanner.nextLine();
-            if(!sMenu.matches("\\d+")) {
+
+            int menu;
+            if(!Util.isNumber(sMenu)) {
                 continue;
             } else if("".equals(sMenu)) {
                 menu = 4;
@@ -36,25 +31,13 @@ public class Main {
 
             switch (menu) {
                 case 1:
-                    TransactionResult result = MainService.withdraw(scanner, currentAccount);
-
-                    currentAccount = result.getAccount();
-                    transactions.add(result.getTransaction());
-
-                    AccountRepository.writeAccountsToFile(args[0], accounts);
-                    TransactionRepository.writeTransactionsToFile(args[1], transactions);
+                    currentAccount = atmService.withdraw(currentAccount);
                     break;
                 case 2:
-                    result = MainService.transfer(scanner, accounts, currentAccount);
-
-                    currentAccount = result.getAccount();
-                    transactions.add(result.getTransaction());
-
-                    AccountRepository.writeAccountsToFile(args[0], accounts);
-                    TransactionRepository.writeTransactionsToFile(args[1], transactions);
+                    currentAccount = atmService.transfer(currentAccount);
                     break;
                 case 3:
-                    MainService.printTransactionHistory(currentAccount, transactions);
+                    atmService.printTransactionHistory(currentAccount);
                     break;
                 default:
                     currentAccount = null;

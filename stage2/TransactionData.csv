@@ -1,1 +1,3 @@
 Reference Number;Account Number;Timestamp;Transaction Type;Amount;Recipient Account Number
+736677;206645;2022-07-06 14:14 PM;Withdraw;10;null
+868475;206645;2022-07-06 14:28 PM;Transfer;123;153266
